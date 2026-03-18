@@ -1,6 +1,8 @@
 import os
 import subprocess
 
+from google.genai import types
+
 def run_python_file(working_directory, file_path, args=None):
     try:
         absolute_wd = os.path.abspath(working_directory)
@@ -47,3 +49,27 @@ def run_python_file(working_directory, file_path, args=None):
         result.append(f"STDERR: {completed_process.stderr}")
 
     return '\n'.join(result)
+
+
+schema_run_python_file = types.FunctionDeclaration(
+    name="run_python_file",
+    description="Runs a python file given its path relative to the working directory and Return its Stdout or Stderr as a string.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="Relative path to the file"
+            ),
+            "args": types.Schema(
+                type=types.Type.ARRAY,
+                description="Optional list of command line arguments to pass to the python script",
+                items=types.Schema(
+                    type=types.Type.STRING,
+                    description="A single command line argument"
+                )
+            ),
+        },
+        required=["file_path"]
+    )
+)

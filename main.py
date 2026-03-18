@@ -5,12 +5,19 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
+from prompts import system_prompt
+from call_functions import available_functions
+
 load_dotenv()
 
 def generate_content(client, messages):
     response = client.models.generate_content(
         model = "gemini-2.5-flash",
-        contents = messages
+        contents = messages,
+        config = types.GenerateContentConfig(
+            system_instruction=system_prompt, 
+            tools=[available_functions]
+        ),
     )
     return response
 
@@ -32,6 +39,9 @@ def main():
 
     if not response.usage_metadata:
         raise RuntimeError("Failed API Request!")
+
+    for function_call in response.function_calls:
+        print(f"Calling function: {function_call.name}({function_call.args})")
 
     if args.verbose:
         print(f"User prompt: {args.user_prompt}")
