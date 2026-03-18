@@ -10,3 +10,8 @@ wheels/
 .venv
 
 .env
+
+# Testing Grounds
+calculator
+test_get_file_content.py
+test_get_files_info.py
