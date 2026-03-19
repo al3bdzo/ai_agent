@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-from google.genai import types
+# from google.genai import types
 
 def run_python_file(working_directory, file_path, args=None):
     try:
@@ -51,25 +51,50 @@ def run_python_file(working_directory, file_path, args=None):
     return '\n'.join(result)
 
 
-schema_run_python_file = types.FunctionDeclaration(
-    name="run_python_file",
-    description="Runs a python file given its path relative to the working directory and Return its Stdout or Stderr as a string.",
-    parameters=types.Schema(
-        type=types.Type.OBJECT,
-        properties={
-            "file_path": types.Schema(
-                type=types.Type.STRING,
-                description="Relative path to the file"
-            ),
-            "args": types.Schema(
-                type=types.Type.ARRAY,
-                description="Optional list of command line arguments to pass to the python script",
-                items=types.Schema(
-                    type=types.Type.STRING,
-                    description="A single command line argument"
-                )
-            ),
+schema_run_python_file = {
+    "type" : "function",
+    "name" : "run_python_file",
+    "description" : "Runs a python file given its path relative to the working directory and Return its Stdout or Stderr as a string.",
+    "parameters" : {
+        "type" : "object",
+        "properties" : {
+            "file_path": {
+                "type": "string",
+                "description":"Relative path to the file"
+            },
+            "args" : {
+                "type" : "array",
+                "description" : "Optional list of command line arguments to pass to the python script",
+                "items" : {
+                    "type" : "string",
+                    "description" : "A single command line argument"
+                }
+            }
         },
-        required=["file_path"]
-    )
-)
+        "required" : ["file_path"]
+    }
+}
+
+
+# schema_run_python_file = types.FunctionDeclaration(
+#     name="run_python_file",
+#     description="Runs a python file given its path relative to the working directory and Return its Stdout or Stderr as a string.",
+#     parameters=types.Schema(
+#         type=types.Type.OBJECT,
+#         properties={
+#             "file_path": types.Schema(
+#                 type=types.Type.STRING,
+#                 description="Relative path to the file"
+#             ),
+#             "args": types.Schema(
+#                 type=types.Type.ARRAY,
+#                 description="Optional list of command line arguments to pass to the python script",
+#                 items=types.Schema(
+#                     type=types.Type.STRING,
+#                     description="A single command line argument"
+#                 )
+#             ),
+#         },
+#         required=["file_path"]
+#     )
+# )

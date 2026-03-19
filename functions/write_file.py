@@ -1,5 +1,5 @@
 import os
-from google.genai import types
+# from google.genai import types
 
 def write_file(working_directory, file_path, content):
     try:
@@ -27,21 +27,42 @@ def write_file(working_directory, file_path, content):
     return f'Successfully wrote to "{file_path}" ({len(content)} characters written)'
     
 
-schema_write_file = types.FunctionDeclaration(
-    name="write_file",
-    description="Writes to a file given its path relative to the working directory and the desired content to be written",
-    parameters=types.Schema(
-        type=types.Type.OBJECT,
-        properties={
-            "file_path": types.Schema(
-                type=types.Type.STRING,
-                description="Relative path to file"
-            ),
-            "content": types.Schema(
-                type=types.Type.STRING,
-                description="The content to be written to the file"
-            )
+schema_write_file = {
+    "type" : "function",
+    "name" : "write_file",
+    "description" : "Writes to a file given its path relative to the working directory and the desired content to be written",
+    "parameters" : {
+        "type" : "object",
+        "properties" : {
+            "file_path":{
+                "type": "string",
+                "description":"Relative path to the file"
+            },
+            "content" : {
+                "type" : "string",
+                "description" : "The content to be written to the file"
+            }
         },
-        required=["file_path", "content"]
-    )
-)
+        "required" : ["file_path"]    
+    }
+}
+
+
+# schema_write_file = types.FunctionDeclaration(
+#     name="write_file",
+#     description="Writes to a file given its path relative to the working directory and the desired content to be written",
+#     parameters=types.Schema(
+#         type=types.Type.OBJECT,
+#         properties={
+#             "file_path": types.Schema(
+#                 type=types.Type.STRING,
+#                 description="Relative path to file"
+#             ),
+#             "content": types.Schema(
+#                 type=types.Type.STRING,
+#                 description="The content to be written to the file"
+#             )
+#         },
+#         required=["file_path", "content"]
+#     )
+# )

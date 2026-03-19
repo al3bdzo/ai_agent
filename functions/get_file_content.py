@@ -1,6 +1,6 @@
 import os
 
-from google.genai import types
+# from google.genai import types
 
 from config import MAX_FILE_READ_CHARS
 
@@ -30,18 +30,35 @@ def get_file_content(working_directory, file_path):
         return f"Error: {e}"
         
     return file_content
-    
-schema_get_file_content = types.FunctionDeclaration(
-    name="get_file_content",
-    description="Returns the contents of a file given its path relative to the working directory",
-    parameters=types.Schema(
-        type=types.Type.OBJECT,
-        properties={
-            "file_path": types.Schema(
-                type=types.Type.STRING,
-                description="Relative path to the file"
-            ),
+
+schema_get_file_content = {
+    "type" : "function",
+    "name" : "get_file_content",
+    "description" : "Returns the contents of a file given its path relative to the working directory",
+    "parameters" : {
+        "type" : "object",
+        "properties" : {
+            "file_path":{
+                "type": "string",
+                "description":"Relative path to the file"
+            }
         },
-        required=["file_path"]
-    )
-)
+        "required" : ["file_path"],
+        "additionalProperties": False
+    }
+}
+
+# schema_get_file_content = types.FunctionDeclaration(
+#     name="get_file_content",
+#     description="Returns the contents of a file given its path relative to the working directory",
+#     parameters=types.Schema(
+#         type=types.Type.OBJECT,
+#         properties={
+#             "file_path": types.Schema(
+#                 type=types.Type.STRING,
+#                 description="Relative path to the file"
+#             ),
+#         },
+#         required=["file_path"]
+#     )
+# )
