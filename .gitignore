@@ -12,8 +12,3 @@ wheels/
 .env
 
 # Testing Grounds
-calculator
-test_get_file_content.py
-test_get_files_info.py
-test_write_file.py
-test_run_python_file.py
