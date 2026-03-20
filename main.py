@@ -1,5 +1,7 @@
 import os
 import argparse
+import sys
+import json
 
 from dotenv import load_dotenv
 
@@ -10,6 +12,7 @@ from openai import OpenAI
 import json
 
 from prompts import system_prompt
+from config import MAX_ITERATIONS
 from call_functions import available_functions, call_function
 
 load_dotenv()
@@ -37,37 +40,54 @@ def main():
 
     messages = [{"role": "user", "content": args.user_prompt}]
 
-    response = generate_content(client, messages)
+
+    for _ in range(MAX_ITERATIONS):
+        response = generate_content(client, messages)
+
+        if hasattr(response, "output") and response.output:
+            messages.extend(response.output)
+
+        function_calls = [
+            item for item in response.output 
+            if hasattr(item, "type") and item.type == "function_call"
+        ]
+
+        for function_call in function_calls:
+            function_response = call_function(function_call, verbose=args.verbose)
+
+            if "content" not in function_response:
+                raise Exception("Function call didn't return content")
+
+            try:
+                call_data = function_response["content"]
+            except Exception:
+                raise Exception("Function call returned invalid JSON")
+            
+            if not call_data:
+                raise Exception("Functoin call returned empty data")
+            
+            call_id = function_call.call_id
+
+            messages.append({"type" : "function_call_output" , "call_id" : call_id,"output" : call_data})
+
+            if args.verbose:
+                print(f"-> {call_data}")
+            
+
+        if not function_calls:
+            if args.verbose:
+                print(f"User prompt: {args.user_prompt}")
+                if hasattr(response, "usage"):
+                    print(f"Prompt tokens: {response.usage.input_tokens}")
+                    print(f"Response tokens: {response.usage.output_tokens}")
+            
+            if hasattr(response, "output_text") and response.output_text:
+                print(response.output_text)
+            
+            return 
     
-    function_calls = [item for item in response.output if item.type == "function_call"]
-    function_results = []
-    for function_call in function_calls:
-        function_response = call_function(function_call, verbose=args.verbose)
-
-        if "content" not in function_response:
-            raise Exception("Function call didn't return content")
-
-        try:
-            call_data = function_response["content"]
-        except Exception:
-            raise Exception("Function call returned invalid JSON")
-        
-        if not call_data:
-            raise Exception("Functoin call returned empty data")
-        
-        function_results.append(call_data)
-
-        if args.verbose:
-            print(f"-> {call_data}")
-
-    if args.verbose:
-        print(f"User prompt: {args.user_prompt}")
-        if hasattr(response, "usage"):
-            print(f"Prompt tokens: {response.usage.input_tokens}")
-            print(f"Response tokens: {response.usage.output_tokens}")
-    
-    if hasattr(response, "output_text") and response.output_text:
-        print(response.output_text)
+    print("maximum iterations exceeded")
+    sys.exit(1)
 
 
 # def generate_content(client, messages):

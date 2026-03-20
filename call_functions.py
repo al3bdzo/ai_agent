@@ -37,7 +37,7 @@ def call_function(function_call, verbose=False):
     if function_name not in function_map:
         return {
             "role" : "tool",
-            "tool_call_id" : function_call.id,
+            "call_id" : function_call.id,
             "content" : json.dump({
                 "error" f"Unknown function: {function_name}"
             })
@@ -53,7 +53,7 @@ def call_function(function_call, verbose=False):
 
     return {
         "role": "tool",
-        "tool_call_id": function_call.id,
+        "call_id": function_call.id,
         "content": json.dumps(response)
     }
 
